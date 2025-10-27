@@ -16,20 +16,83 @@
     --header-bg: linear-gradient(90deg, #7c3aed, #f472b6);
 }
 
-/* ✅ GLOBAL TRANSITION FOR THEME SWITCH */
 * {
     transition: background-color 0.4s, color 0.4s, box-shadow 0.4s, border-color 0.4s;
 }
 
 body {
     font-family: 'Poppins', sans-serif;
-    margin: 0; 
+    margin: 0;
     padding: 0;
     color: var(--text-color);
-    background-color: var(--bg-color); /* ✅ Added this line */
-    transition: background 0.4s, color 0.4s;
+    background-color: var(--bg-color);
+    overflow-x: hidden;
 }
 
+/* 🌈 INTRO ANIMATION */
+#intro {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #7c3aed, #f472b6, #06b6d4, #fbbf24);
+    background-size: 300% 300%;
+    animation: gradientFlow 6s ease infinite;
+    color: white;
+    z-index: 9999;
+    overflow: hidden;
+}
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+#intro img {
+    width: 100px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeIn 1.2s forwards 0.3s;
+}
+#intro span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(30px);
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    animation: fadeInUp 1s forwards;
+}
+#deal { animation-delay: 0.5s; }
+#hunt { animation-delay: 1.3s; }
+
+@keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    to { opacity: 1; transform: scale(1); }
+}
+.split { animation: slideLeft 1.5s forwards; }
+.split-right { animation: slideRight 1.5s forwards; }
+
+@keyframes slideLeft {
+    to { transform: translateX(-120vw) rotateY(90deg); opacity: 0; }
+}
+@keyframes slideRight {
+    to { transform: translateX(120vw) rotateY(90deg); opacity: 0; }
+}
+
+/* MAIN CONTENT */
+#main-content {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+#main-content.visible {
+    opacity: 1;
+}
+
+/* HEADER */
 .header {
     background: var(--header-bg);
     color: white;
@@ -42,7 +105,6 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     position: relative;
 }
-
 .theme-toggle {
     position: absolute;
     right: 20px;
@@ -55,20 +117,12 @@ body {
     width: 40px;
     height: 40px;
     cursor: pointer;
-    transition: 0.3s;
 }
-.theme-toggle:hover {
-    background: rgba(255,255,255,0.4);
-}
+.theme-toggle:hover { background: rgba(255,255,255,0.4); }
 
-.form-container {
-    text-align: center;
-    margin: 30px auto;
-}
-.form-container form {
-    display: inline-flex;
-    gap: 10px;
-}
+/* SEARCH BAR */
+.form-container { text-align: center; margin: 30px auto; }
+.form-container form { display: inline-flex; gap: 10px; }
 .form-container input {
     padding: 12px 16px;
     width: 320px;
@@ -77,12 +131,8 @@ body {
     font-size: 16px;
     background: rgba(255,255,255,0.1);
     color: var(--text-color);
-    transition: 0.3s;
 }
-.form-container input:focus {
-    outline: none;
-    box-shadow: 0 0 10px var(--accent);
-}
+.form-container input:focus { outline: none; box-shadow: 0 0 10px var(--accent); }
 .form-container button {
     padding: 12px 25px;
     background: var(--button-gradient);
@@ -91,11 +141,8 @@ body {
     border-radius: 12px;
     font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
 }
-.form-container button:hover {
-    transform: scale(1.05);
-}
+.form-container button:hover { transform: scale(1.05); }
 
 #loader {
     display: none;
@@ -105,6 +152,7 @@ body {
     margin: 15px 0;
 }
 
+/* RESULT CARDS */
 .results-container {
     display: flex;
     gap: 15px;
@@ -123,7 +171,6 @@ body {
     box-shadow: 0 8px 30px rgba(0,0,0,0.3);
     backdrop-filter: blur(10px);
 }
-
 .column h2 {
     text-align: center;
     color: white;
@@ -131,7 +178,6 @@ body {
     border-radius: 10px;
     margin-bottom: 15px;
 }
-
 .amazon-header { background: #ff9900; }
 .flipkart-header { background: #2874f0; }
 .myntra-header { background: #ff3f6c; }
@@ -153,10 +199,7 @@ body {
     border-radius: 8px;
     margin-bottom: 5px;
 }
-.product:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-}
+.product:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.4); }
 
 .buy-btn {
     display: inline-block;
@@ -167,12 +210,10 @@ body {
     text-decoration: none;
     border-radius: 10px;
     font-weight: 500;
-    transition: 0.3s;
 }
-.buy-btn:hover {
-    transform: scale(1.05);
-}
+.buy-btn:hover { transform: scale(1.05); }
 
+/* BEST DEAL CARD */
 .best-deal {
     text-align: center;
     margin: 30px auto;
@@ -184,10 +225,6 @@ body {
     max-width: 700px;
     color: #1e293b;
 }
-.best-deal h2 {
-    margin: 0;
-    font-size: 24px;
-}
 
 footer {
     text-align: center;
@@ -196,16 +233,12 @@ footer {
     color: #94a3b8;
 }
 
-/* ✅ RESPONSIVE */
-@media(max-width:1100px){
-    .results-container{flex-wrap:wrap;}
-}
 @media(max-width:600px){
-    .form-container input{width:200px;}
-    .header{font-size:26px;}
+  .form-container input{width:200px;}
+  .header{font-size:26px;}
 }
 
-/* ✅ LIGHT MODE VARIABLES */
+/* LIGHT MODE */
 .light-mode {
     --bg-color: #f3f4f6;
     --card-bg: rgba(255,255,255,0.9);
@@ -219,70 +252,108 @@ footer {
 </head>
 <body>
 
-<div class="header">
-  🛍️ Deal Hunt 
-  <button class="theme-toggle" id="themeToggle">🌙</button>
-</div>
-
-<div class="form-container">
-  <form method="POST" onsubmit="showLoader()">
-    <input type="text" name="product" placeholder="Search for a product..." required>
-    <button type="submit">Search</button>
-  </form>
-</div>
-
-<div id="loader">🔎 Fetching the best deals...</div>
-
-{% if overall_best_deal %}
-<div class="best-deal">
-  <h2>🔥 Overall Best Deal!</h2>
-  <div class="product">
-    <img src="{{ overall_best_deal['Image'] }}">
-    <p><strong>{{ overall_best_deal['Product'] }}</strong></p>
-    <p>Price: ₹{{ overall_best_deal['Price'] }}</p>
-    <p>From: {{ overall_best_deal['Website'] }}</p>
-    <a href="{{ overall_best_deal['Link'] }}" class="buy-btn" target="_blank">Buy Now</a>
+<!-- 🎬 INTRO SCREEN -->
+<div id="intro">
+  <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Shopping Logo">
+  <div>
+    <span id="deal">DEAL</span>&nbsp;<span id="hunt">HUNT</span>
   </div>
 </div>
-{% endif %}
 
-{% if results %}
-<div class="results-container">
-  {% set websites = ['Amazon','Flipkart','Myntra','Snapdeal','Ajio'] %}
-  {% for site in websites %}
-    {% set items = results|selectattr("Website","equalto",site)|list %}
-    {% if items %}
-      {% set sorted_items = items|sort(attribute='Price', reverse=false) %}
-      <div class="column">
-        <h2 class="{{ site|lower }}-header">{{ site }}</h2>
-        {% for item in sorted_items %}
-          <div class="product">
-            <img src="{{ item['Image'] }}">
-            <p><strong>{{ item['Product'] }}</strong></p>
-            <p>₹{{ item['Price'] }}</p>
-            <a href="{{ item['Link'] }}" class="buy-btn" target="_blank">Buy</a>
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
-  {% endfor %}
+<!-- 🌐 MAIN SITE -->
+<div id="main-content">
+  <div class="header">
+    🛍️ Deal Hunt 
+    <button class="theme-toggle" id="themeToggle">🌙</button>
+  </div>
+
+  <div class="form-container">
+    <form method="POST" onsubmit="showLoader()">
+      <input type="text" name="product" placeholder="Search for a product..." required>
+      <button type="submit">Search</button>
+    </form>
+  </div>
+
+  <div id="loader">🔎 Fetching the best deals...</div>
+
+  {% if overall_best_deal %}
+  <div class="best-deal">
+    <h2>🔥 Overall Best Deal!</h2>
+    <div class="product">
+      <img src="{{ overall_best_deal['Image'] }}">
+      <p><strong>{{ overall_best_deal['Product'] }}</strong></p>
+      <p>Price: ₹{{ overall_best_deal['Price'] }}</p>
+      <p>From: {{ overall_best_deal['Website'] }}</p>
+      <a href="{{ overall_best_deal['Link'] }}" class="buy-btn" target="_blank">Buy Now</a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if results %}
+  <div class="results-container">
+    {% set websites = ['Amazon','Flipkart','Myntra','Snapdeal','Ajio'] %}
+    {% for site in websites %}
+      {% set items = results|selectattr("Website","equalto",site)|list %}
+      {% if items %}
+        {% set sorted_items = items|sort(attribute='Price', reverse=false) %}
+        <div class="column">
+          <h2 class="{{ site|lower }}-header">{{ site }}</h2>
+          {% for item in sorted_items %}
+            <div class="product">
+              <img src="{{ item['Image'] }}">
+              <p><strong>{{ item['Product'] }}</strong></p>
+              <p>₹{{ item['Price'] }}</p>
+              <a href="{{ item['Link'] }}" class="buy-btn" target="_blank">Buy</a>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <footer>
+    © 2025 <b>Deal Hunt</b> by Dharani T |
+    <a href="https://github.com/Dharani-T31/Deal-Hunt" target="_blank" style="color:var(--accent);">GitHub</a>
+  </footer>
 </div>
-{% endif %}
-
-<footer>
-© 2025 <b>Deal Hunt</b> by Dharani T |
-<a href="https://github.com/Dharani-T31/Deal-Hunt" target="_blank" style="color:var(--accent);">GitHub</a>
-</footer>
 
 <script>
-function showLoader() {
-  document.getElementById("loader").style.display = "block";
+function showLoader(){
+  document.getElementById("loader").style.display="block";
 }
 
+// 🌙 Theme Toggle
 const toggle = document.getElementById('themeToggle');
-toggle.addEventListener('click', () => {
+toggle.addEventListener('click', ()=>{
   document.body.classList.toggle('light-mode');
-  toggle.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+  toggle.textContent = document.body.classList.contains('light-mode') ? '☀️':'🌙';
+});
+
+// 🎬 Intro Animation (only once)
+window.addEventListener('load', () => {
+  const deal = document.getElementById('deal');
+  const hunt = document.getElementById('hunt');
+  const intro = document.getElementById('intro');
+  const main = document.getElementById('main-content');
+
+  const introPlayed = localStorage.getItem('introPlayed');
+
+  if (!introPlayed) {
+    setTimeout(() => {
+      deal.classList.add('split');
+      hunt.classList.add('split-right');
+    }, 2000);
+
+    setTimeout(() => {
+      intro.style.display = 'none';
+      main.classList.add('visible');
+      localStorage.setItem('introPlayed', 'true');
+    }, 4000);
+  } else {
+    intro.style.display = 'none';
+    main.classList.add('visible');
+  }
 });
 </script>
 
