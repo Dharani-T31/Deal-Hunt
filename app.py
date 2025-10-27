@@ -9,6 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 app = Flask(__name__)
 
+# -------------------- DRIVER SETUP --------------------
 def get_driver():
     options = Options()
     options.add_argument("--headless")
@@ -19,6 +20,14 @@ def get_driver():
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36"
     )
     return webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+
+# -------------------- UTILITY --------------------
+def parse_price(price_str):
+    try:
+        clean = price_str.replace("₹","").replace(",","").replace(" ","").replace("Rs.","").strip()
+        return float(clean)
+    except:
+        return float('inf')
 
 # -------------------- AMAZON SCRAPER --------------------
 def scrape_amazon(product_name):
@@ -75,6 +84,7 @@ def scrape_flipkart(product_name):
                 link = p.find_element(By.TAG_NAME, "a").get_attribute("href")
                 try: img = p.find_element(By.TAG_NAME, "img").get_attribute("src")
                 except: img = ""
+                price = price.replace("₹","").replace(",","").replace("Rs.","").strip()
                 results.append({"Website": "Flipkart", "Product": name, "Price": price, "Link": link, "Image": img})
             except: continue
     except Exception as e:
@@ -90,7 +100,6 @@ def scrape_myntra(product_name):
     try:
         url = f"https://www.myntra.com/{product_name.replace(' ', '-')}"
         driver.get(url)
-        # Wait for products to load
         WebDriverWait(driver, 5).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, "li.product-base"))
         )
@@ -102,8 +111,6 @@ def scrape_myntra(product_name):
                 name = f"{brand} {item}"
             except:
                 continue
-
-            # Get price: first try discounted, then normal
             price = "0"
             try:
                 price = p.find_element(By.CSS_SELECTOR, "span.product-discountedPrice").text
@@ -112,29 +119,17 @@ def scrape_myntra(product_name):
                     price = p.find_element(By.CSS_SELECTOR, "span.product-price").text
                 except:
                     price = "0"
-
-            # Link
-            try:
-                link = p.find_element(By.TAG_NAME, "a").get_attribute("href")
-            except:
-                link = ""
-            # Image
-            try:
-                img = p.find_element(By.TAG_NAME, "img").get_attribute("src")
-            except:
-                img = ""
-
-            # Clean price string
-            price = price.replace("₹","").replace(",","").strip()
-
+            try: link = p.find_element(By.TAG_NAME, "a").get_attribute("href")
+            except: link = ""
+            try: img = p.find_element(By.TAG_NAME, "img").get_attribute("src")
+            except: img = ""
+            price = price.replace("₹","").replace(",","").replace("Rs.","").strip()
             results.append({"Website": "Myntra", "Product": name, "Price": price, "Link": link, "Image": img})
-
     except Exception as e:
         print("Myntra Error:", e)
     finally:
         driver.quit()
     return results
-
 
 # -------------------- SNAPDEAL SCRAPER --------------------
 def scrape_snapdeal(product_name):
@@ -156,6 +151,7 @@ def scrape_snapdeal(product_name):
             except: link = ""
             try: img = p.find_element(By.TAG_NAME,"img").get_attribute("src")
             except: img = ""
+            price = price.replace("₹","").replace(",","").replace("Rs.","").strip()
             results.append({"Website":"Snapdeal","Product":name,"Price":price,"Link":link,"Image":img})
     except Exception as e:
         print("Snapdeal Error:", e)
@@ -179,14 +175,14 @@ def scrape_ajio(product_name):
             except: brand = ""
             try: name_text = p.find_element(By.CSS_SELECTOR,"div.name").text
             except: name_text = ""
-            full_name = (brand + " " + name_text).strip()
-            if not full_name: full_name = "N/A"
+            full_name = (brand + " " + name_text).strip() or "N/A"
             try: price = p.find_element(By.CSS_SELECTOR,"span.price, div.price").text
             except: price = "0"
             try: link = p.find_element(By.TAG_NAME,"a").get_attribute("href")
             except: link = ""
             try: img = p.find_element(By.TAG_NAME,"img").get_attribute("src")
             except: img = ""
+            price = price.replace("₹","").replace(",","").replace("Rs.","").strip()
             results.append({"Website":"Ajio","Product":full_name,"Price":price,"Link":link,"Image":img})
     except Exception as e:
         print("Ajio Error:", e)
@@ -210,53 +206,24 @@ def index():
         ajio_res = scrape_ajio(product)
         results = amazon_res + flipkart_res + myntra_res + snapdeal_res + ajio_res
 
-        # Keep top 5 products per website
-        final_results = []
         websites = ['Amazon','Flipkart','Myntra','Snapdeal','Ajio']
+        final_results = []
         for site in websites:
             site_items = [i for i in results if i['Website']==site]
+            site_items.sort(key=lambda x: parse_price(x["Price"]))
             final_results.extend(site_items[:5])
         results = final_results
 
-        # Best deal per site
         for item in results:
             site = item["Website"]
-            raw_price = item["Price"]
-            clean_price = raw_price.replace("₹","").replace(",","").strip()
-            try:
-                price_val = float(clean_price)
-            except:
-                price_val = float('inf')
-            if site not in best_deals_by_site:
+            price_val = parse_price(item["Price"])
+            if site not in best_deals_by_site or price_val < parse_price(best_deals_by_site[site]["Price"]):
                 best_deals_by_site[site] = item
-            else:
-                existing_price = best_deals_by_site[site]["Price"].replace("₹","").replace(",","").strip()
-                try:
-                    existing_price_val = float(existing_price)
-                except:
-                    existing_price_val = float('inf')
-                if price_val < existing_price_val:
-                    best_deals_by_site[site] = item
 
-        # Overall best deal
-        valid_results = []
-        for item in results:
-            raw_price = item["Price"]
-            clean_price = raw_price.replace("₹","").replace(",","").strip()
-            try:
-                price_val = float(clean_price)
-                valid_results.append((price_val, item))
-            except:
-                continue
-        if valid_results:
-            overall_best_deal = min(valid_results, key=lambda x: x[0])[1]
+        if results:
+            overall_best_deal = min(results, key=lambda x: parse_price(x["Price"]))
 
-    return render_template(
-        'index.html',
-        results=results,
-        best_deals_by_site=best_deals_by_site,
-        overall_best_deal=overall_best_deal
-    )
+    return render_template('index.html', results=results, best_deals_by_site=best_deals_by_site, overall_best_deal=overall_best_deal)
 
 if __name__=="__main__":
     app.run(debug=True)

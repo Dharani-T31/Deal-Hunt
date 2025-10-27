@@ -2,78 +2,289 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Price Comparison</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛒 Deal Hunt | Price Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-body { font-family: Arial; background:#f3f4f6; margin:0; padding:0;}
-.header {background: linear-gradient(90deg,#ff7eb3,#6a11cb); color:white; text-align:center; padding:20px; font-size:28px; font-weight:bold;}
-.form-container {text-align:center; padding:20px;}
-.form-container input {padding:12px; width:300px; border:1px solid #ccc; border-radius:5px;}
-.form-container button {padding:12px 20px; background:#6a11cb; color:white; border:none; border-radius:5px; cursor:pointer;}
-.results-container {display:flex; justify-content:center; gap:20px; flex-wrap:wrap; padding:20px;}
-.card {flex:1; min-width:250px; max-width:300px; border-radius:10px; padding:15px; color:white;}
-.amazon {background-color:#ff9900;}
-.flipkart {background-color:#2874f0;}
-.myntra {background-color:#ff3f6c;}
-.snapdeal {background-color:#f36f21;}
-.ajio {background-color:#00bcd4;}
-.product {background:white; color:black; border-radius:8px; padding:10px; margin-bottom:10px; text-align:center;}
-.product img {width:150px; height:150px; object-fit:contain; margin-bottom:5px;}
-.buy-btn {display:inline-block; margin-top:8px; padding:8px 14px; background:#6a11cb; color:white; text-decoration:none; border-radius:6px; font-weight:bold;}
+:root {
+    --bg-color: #0f172a;
+    --card-bg: rgba(255,255,255,0.05);
+    --text-color: #e2e8f0;
+    --accent: #7c3aed;
+    --accent2: #f472b6;
+    --button-gradient: linear-gradient(90deg, #7c3aed, #f472b6);
+    --header-bg: linear-gradient(90deg, #7c3aed, #f472b6);
+}
+
+/* ✅ GLOBAL TRANSITION FOR THEME SWITCH */
+* {
+    transition: background-color 0.4s, color 0.4s, box-shadow 0.4s, border-color 0.4s;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0; 
+    padding: 0;
+    color: var(--text-color);
+    background-color: var(--bg-color); /* ✅ Added this line */
+    transition: background 0.4s, color 0.4s;
+}
+
+.header {
+    background: var(--header-bg);
+    color: white;
+    text-align: center;
+    padding: 30px 15px;
+    font-size: 32px;
+    font-weight: 600;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+.theme-toggle {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    font-size: 22px;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.theme-toggle:hover {
+    background: rgba(255,255,255,0.4);
+}
+
+.form-container {
+    text-align: center;
+    margin: 30px auto;
+}
+.form-container form {
+    display: inline-flex;
+    gap: 10px;
+}
+.form-container input {
+    padding: 12px 16px;
+    width: 320px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    background: rgba(255,255,255,0.1);
+    color: var(--text-color);
+    transition: 0.3s;
+}
+.form-container input:focus {
+    outline: none;
+    box-shadow: 0 0 10px var(--accent);
+}
+.form-container button {
+    padding: 12px 25px;
+    background: var(--button-gradient);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.form-container button:hover {
+    transform: scale(1.05);
+}
+
+#loader {
+    display: none;
+    text-align: center;
+    font-size: 18px;
+    color: var(--accent2);
+    margin: 15px 0;
+}
+
+.results-container {
+    display: flex;
+    gap: 15px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+}
+
+.column {
+    flex: 1;
+    min-width: 200px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+}
+
+.column h2 {
+    text-align: center;
+    color: white;
+    padding: 8px 0;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.amazon-header { background: #ff9900; }
+.flipkart-header { background: #2874f0; }
+.myntra-header { background: #ff3f6c; }
+.snapdeal-header { background: #f36f21; }
+.ajio-header { background: #00bcd4; }
+
+.product {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 12px;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.product img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 8px;
+    margin-bottom: 5px;
+}
+.product:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.buy-btn {
+    display: inline-block;
+    margin-top: 5px;
+    padding: 6px 12px;
+    background: var(--button-gradient);
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+.buy-btn:hover {
+    transform: scale(1.05);
+}
+
+.best-deal {
+    text-align: center;
+    margin: 30px auto;
+    padding: 25px;
+    background: linear-gradient(135deg,#facc15,#f59e0b);
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    width: 90%;
+    max-width: 700px;
+    color: #1e293b;
+}
+.best-deal h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+footer {
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+    color: #94a3b8;
+}
+
+/* ✅ RESPONSIVE */
+@media(max-width:1100px){
+    .results-container{flex-wrap:wrap;}
+}
+@media(max-width:600px){
+    .form-container input{width:200px;}
+    .header{font-size:26px;}
+}
+
+/* ✅ LIGHT MODE VARIABLES */
+.light-mode {
+    --bg-color: #f3f4f6;
+    --card-bg: rgba(255,255,255,0.9);
+    --text-color: #1e293b;
+    --accent: #6d28d9;
+    --accent2: #ec4899;
+    --button-gradient: linear-gradient(90deg, #6d28d9, #ec4899);
+    --header-bg: linear-gradient(90deg, #6d28d9, #ec4899);
+}
 </style>
 </head>
 <body>
 
-<div class="header">🛒Price Comparison</div>
+<div class="header">
+  🛍️ Deal Hunt 
+  <button class="theme-toggle" id="themeToggle">🌙</button>
+</div>
 
 <div class="form-container">
-<form method="POST">
-<input type="text" name="product" placeholder="Search for a product..." required>
-<button type="submit">Search</button>
-</form>
+  <form method="POST" onsubmit="showLoader()">
+    <input type="text" name="product" placeholder="Search for a product..." required>
+    <button type="submit">Search</button>
+  </form>
 </div>
 
-<!-- Overall Best Deal -->
+<div id="loader">🔎 Fetching the best deals...</div>
+
 {% if overall_best_deal %}
-<div style="text-align:center; margin:20px; padding:20px; background:#ffd700; border-radius:10px;">
-    <h2 style="margin:0;">🔥 Overall Best Deal!</h2>
-    <div class="product" style="display:inline-block; margin-top:10px; background:white;">
-        <img src="{{ overall_best_deal['Image'] }}" style="width:150px; height:150px; object-fit:contain;">
-        <p><strong>{{ overall_best_deal['Product'] }}</strong></p>
-        <p>Price: ₹{{ overall_best_deal['Price'] }}</p>
-        <p>From: {{ overall_best_deal['Website'] }}</p>
-        <a href="{{ overall_best_deal['Link'] }}" class="buy-btn" target="_blank">Buy Now</a>
-    </div>
+<div class="best-deal">
+  <h2>🔥 Overall Best Deal!</h2>
+  <div class="product">
+    <img src="{{ overall_best_deal['Image'] }}">
+    <p><strong>{{ overall_best_deal['Product'] }}</strong></p>
+    <p>Price: ₹{{ overall_best_deal['Price'] }}</p>
+    <p>From: {{ overall_best_deal['Website'] }}</p>
+    <a href="{{ overall_best_deal['Link'] }}" class="buy-btn" target="_blank">Buy Now</a>
+  </div>
 </div>
 {% endif %}
 
-<!-- Website Cards -->
 {% if results %}
 <div class="results-container">
-{% set websites = ['Amazon','Flipkart','Myntra','Snapdeal','Ajio'] %}
-{% set colors = {'Amazon':'amazon','Flipkart':'flipkart','Myntra':'myntra','Snapdeal':'snapdeal','Ajio':'ajio'} %}
-{% for site in websites %}
-{% set items = results|selectattr("Website","equalto",site)|list %}
-{% if items %}
-<div class="card {{ colors[site] }}">
-<h2>
-  {{ site }}
-  {% if best_deals_by_site.get(site) %}
-    (Best Deal – ₹{{ best_deals_by_site[site]['Price'] }})
-  {% endif %}
-</h2>
-{% for item in items %}
-<div class="product">
-<img src="{{ item['Image'] }}">
-<p><strong>{{ item['Product'] }}</strong></p>
-<p>Price: ₹{{ item['Price'] }}</p>
-<a href="{{ item['Link'] }}" class="buy-btn" target="_blank">Buy</a>
-</div>
-{% endfor %}
+  {% set websites = ['Amazon','Flipkart','Myntra','Snapdeal','Ajio'] %}
+  {% for site in websites %}
+    {% set items = results|selectattr("Website","equalto",site)|list %}
+    {% if items %}
+      {% set sorted_items = items|sort(attribute='Price', reverse=false) %}
+      <div class="column">
+        <h2 class="{{ site|lower }}-header">{{ site }}</h2>
+        {% for item in sorted_items %}
+          <div class="product">
+            <img src="{{ item['Image'] }}">
+            <p><strong>{{ item['Product'] }}</strong></p>
+            <p>₹{{ item['Price'] }}</p>
+            <a href="{{ item['Link'] }}" class="buy-btn" target="_blank">Buy</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endfor %}
 </div>
 {% endif %}
-{% endfor %}
-</div>
-{% endif %}
+
+<footer>
+© 2025 <b>Deal Hunt</b> by Dharani T |
+<a href="https://github.com/Dharani-T31/Deal-Hunt" target="_blank" style="color:var(--accent);">GitHub</a>
+</footer>
+
+<script>
+function showLoader() {
+  document.getElementById("loader").style.display = "block";
+}
+
+const toggle = document.getElementById('themeToggle');
+toggle.addEventListener('click', () => {
+  document.body.classList.toggle('light-mode');
+  toggle.textContent = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
+});
+</script>
 
 </body>
 </html>
