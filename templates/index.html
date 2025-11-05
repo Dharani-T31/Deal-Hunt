@@ -251,7 +251,6 @@ footer {
 </style>
 </head>
 <body>
-
 <!-- 🎬 INTRO SCREEN -->
 <div id="intro">
   <img src="https://cdn-icons-png.flaticon.com/512/2331/2331970.png" alt="Shopping Logo">
@@ -259,23 +258,19 @@ footer {
     <span id="deal">DEAL</span>&nbsp;<span id="hunt">HUNT</span>
   </div>
 </div>
-
 <!-- 🌐 MAIN SITE -->
 <div id="main-content">
   <div class="header">
     🛍️ Deal Hunt 
     <button class="theme-toggle" id="themeToggle">🌙</button>
   </div>
-
   <div class="form-container">
     <form method="POST" onsubmit="showLoader()">
       <input type="text" name="product" placeholder="Search for a product..." required>
       <button type="submit">Search</button>
     </form>
   </div>
-
   <div id="loader">🔎 Fetching the best deals...</div>
-
   {% if overall_best_deal %}
   <div class="best-deal">
     <h2>🔥 Overall Best Deal!</h2>
@@ -288,7 +283,6 @@ footer {
     </div>
   </div>
   {% endif %}
-
   {% if results %}
   <div class="results-container">
     {% set websites = ['Amazon','Flipkart','Myntra','Snapdeal','Ajio'] %}
@@ -311,51 +305,36 @@ footer {
     {% endfor %}
   </div>
   {% endif %}
-
   <footer>
     © 2025 <b>Deal Hunt</b> by Dharani T |
     <a href="https://github.com/Dharani-T31/Deal-Hunt" target="_blank" style="color:var(--accent);">GitHub</a>
   </footer>
 </div>
-
 <script>
 function showLoader(){
   document.getElementById("loader").style.display="block";
 }
-
 // 🌙 Theme Toggle
 const toggle = document.getElementById('themeToggle');
 toggle.addEventListener('click', ()=>{
   document.body.classList.toggle('light-mode');
   toggle.textContent = document.body.classList.contains('light-mode') ? '☀️':'🌙';
 });
-
-// 🎬 Intro Animation (only once)
+// 🎬 Intro Animation (always plays)
 window.addEventListener('load', () => {
   const deal = document.getElementById('deal');
   const hunt = document.getElementById('hunt');
   const intro = document.getElementById('intro');
   const main = document.getElementById('main-content');
-
-  const introPlayed = localStorage.getItem('introPlayed');
-
-  if (!introPlayed) {
-    setTimeout(() => {
-      deal.classList.add('split');
-      hunt.classList.add('split-right');
-    }, 2000);
-
-    setTimeout(() => {
-      intro.style.display = 'none';
-      main.classList.add('visible');
-      localStorage.setItem('introPlayed', 'true');
-    }, 4000);
-  } else {
+  setTimeout(() => {
+    deal.classList.add('split');
+    hunt.classList.add('split-right');
+  }, 2000);
+  setTimeout(() => {
     intro.style.display = 'none';
     main.classList.add('visible');
-  }
+  }, 4000);
 });
 </script>
-
 </body>
 </html>
